@@ -1,0 +1,615 @@
+/*
+ * AdmGranja — estilos (diseño primero para celular)
+ * Concepto: libreta de campo del galpón — superficie clara, verde de potrero
+ * para las acciones y amarillo maíz para la fecha.
+ */
+:root {
+  --fondo: #eef1ec;
+  --superficie: #ffffff;
+  --tinta: #17231c;
+  --tenue: #5a6a60;
+  --linea: #d5ddd6;
+  --primario: #1e6446;
+  --primario-hover: #17533a;
+  --sobre-primario: #ffffff;
+  --maiz: #f2c14e;
+  --maiz-suave: #fbefcb;
+  --error: #b3261e;
+  --error-suave: #fce8e6;
+  --exito: #1b6e3c;
+  --exito-suave: #e3f3e8;
+  --info: #2b4c7e;
+  --info-suave: #e8eef6;
+  --foco: #2f7fd0;
+  --f-display: "Barlow Semi Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-texto: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --radio: 10px;
+  --ancho: 560px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #121815;
+    --superficie: #1b231e;
+    --tinta: #e6ece7;
+    --tenue: #9daea3;
+    --linea: #2e3a33;
+    --primario: #3fa877;
+    --primario-hover: #52ba89;
+    --sobre-primario: #0b1510;
+    --maiz: #e3b544;
+    --maiz-suave: #3a3120;
+    --error: #f2918a;
+    --error-suave: #3a1f1d;
+    --exito: #7fd39d;
+    --exito-suave: #18301f;
+    --info: #a9c3ea;
+    --info-suave: #1c2635;
+    --foco: #7db5f0;
+    color-scheme: dark;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family: var(--f-texto);
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* ---------- Estructura ---------- */
+.app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.etiqueta {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--tenue);
+}
+
+/* ---------- Cabecera ---------- */
+.cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--primario);
+  color: var(--sobre-primario);
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.cabecera__interior {
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cabecera__textos {
+  min-width: 0;
+}
+
+.cabecera__empresa {
+  margin: 0;
+  font: 700 22px/1.1 var(--f-display);
+  text-wrap: balance;
+}
+
+.cabecera__usuario {
+  margin: 4px 0 0;
+  font-size: 14px;
+  opacity: 0.92;
+}
+
+.cabecera .etiqueta {
+  color: inherit;
+  opacity: 0.75;
+}
+
+.cabecera .boton--fantasma {
+  color: var(--sobre-primario);
+  border-color: currentColor;
+  flex: none;
+}
+
+/* ---------- Páginas ---------- */
+.pagina {
+  width: 100%;
+  max-width: var(--ancho);
+  margin: 0 auto;
+  padding: 16px;
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.pagina__titulo {
+  margin: 0;
+  font: 600 15px/1.2 var(--f-texto);
+  color: var(--tenue);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.vacio {
+  margin: 0;
+  color: var(--tenue);
+}
+
+/* ---------- Granjas y crías ---------- */
+.granja {
+  display: grid;
+  gap: 8px;
+}
+
+.granja__nombre {
+  margin: 0;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--maiz);
+  font: 700 20px/1.15 var(--f-display);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.granja__conteo {
+  font: 500 13px var(--f-texto);
+  color: var(--tenue);
+}
+
+.granja__crias {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.cria {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  padding: 12px 12px 12px 14px;
+}
+
+.cria__datos {
+  display: grid;
+  min-width: 0;
+}
+
+.cria__galpon {
+  font: 700 19px/1.15 var(--f-display);
+  overflow-wrap: anywhere;
+}
+
+.cria__id {
+  font-size: 14px;
+  color: var(--tenue);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Botones ---------- */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radio);
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.boton:disabled,
+.boton[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: progress;
+  pointer-events: none;
+}
+
+.boton--primario {
+  background: var(--primario);
+  color: var(--sobre-primario);
+}
+
+.boton--primario:hover:not(:disabled) {
+  background: var(--primario-hover);
+}
+
+.boton--secundario {
+  background: var(--superficie);
+  border-color: var(--linea);
+}
+
+.boton--fantasma {
+  background: transparent;
+  border-color: var(--linea);
+  color: var(--tinta);
+}
+
+.boton--grande {
+  width: 100%;
+  min-height: 54px;
+  font-size: 18px;
+}
+
+.boton--chico {
+  min-height: 36px;
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+/* ---------- Acceso ---------- */
+.login {
+  flex: 1;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  padding-top: calc(32px + env(safe-area-inset-top, 0px));
+  display: grid;
+  align-content: center;
+  gap: 28px;
+}
+
+.login__titulo {
+  margin: 4px 0 0;
+  font: 700 44px/1 var(--f-display);
+  color: var(--primario);
+}
+
+.login__form {
+  display: grid;
+  gap: 14px;
+}
+
+.login input {
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Campos ---------- */
+.campo {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.campo__etiqueta {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.campo input {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--linea);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  font-size: 18px; /* 16px o más evita el zoom automático en iPhone */
+  font-variant-numeric: tabular-nums;
+}
+
+.campo input::placeholder {
+  color: var(--tenue);
+  opacity: 0.7;
+}
+
+.campo input:disabled {
+  opacity: 0.7;
+}
+
+.campo--error input {
+  border-color: var(--error);
+}
+
+.campo__control {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+
+.campo__signo {
+  flex: none;
+  width: 44px;
+  min-height: 48px;
+  border: 1.5px solid var(--linea);
+  border-radius: var(--radio);
+  background: var(--fondo);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.campo__ayuda,
+.campo__error {
+  margin: 0;
+  font-size: 13px;
+}
+
+.campo__ayuda {
+  color: var(--tenue);
+}
+
+.campo__error {
+  color: var(--error);
+  font-weight: 600;
+}
+
+.campo input.campo__fecha {
+  background: var(--maiz-suave);
+  border-color: var(--maiz);
+  font-weight: 600;
+}
+
+.campo--error input.campo__fecha {
+  border-color: var(--error);
+}
+
+/* ---------- Ficha de la cría ---------- */
+.ficha {
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  padding: 14px;
+  display: grid;
+  gap: 4px;
+}
+
+.ficha__titulo {
+  margin: 0;
+  font: 700 24px/1.15 var(--f-display);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
+.ficha__id {
+  font: 500 15px var(--f-texto);
+  color: var(--tenue);
+}
+
+.ficha__fechas {
+  margin: 8px 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.ficha__fechas div {
+  display: grid;
+  gap: 2px;
+}
+
+.ficha__fechas dt {
+  font-size: 12px;
+  color: var(--tenue);
+}
+
+.ficha__fechas dd {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Formulario ---------- */
+.formulario {
+  display: grid;
+  gap: 18px;
+}
+
+.grupo {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.grupo legend {
+  padding: 0;
+  margin-bottom: 10px;
+  font: 700 17px/1.2 var(--f-display);
+  letter-spacing: 0.02em;
+}
+
+.grupo__nota {
+  font: 500 13px var(--f-texto);
+  color: var(--tenue);
+}
+
+.grupo__fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.grupo__temps {
+  display: grid;
+  gap: 10px;
+}
+
+.grupo__temps .campo {
+  grid-template-columns: 7.5em 1fr;
+  align-items: center;
+  column-gap: 10px;
+}
+
+.grupo__temps .campo__error {
+  grid-column: 1 / -1;
+}
+
+.formulario__acciones {
+  display: grid;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+/* ---------- Avisos ---------- */
+.aviso {
+  border-radius: var(--radio);
+  padding: 12px 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.aviso p {
+  margin: 0;
+}
+
+.aviso--error {
+  background: var(--error-suave);
+  color: var(--error);
+  font-weight: 600;
+}
+
+.aviso--exito {
+  background: var(--exito-suave);
+  color: var(--exito);
+  border: 1.5px solid var(--exito);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.aviso--info {
+  background: var(--info-suave);
+  color: var(--info);
+}
+
+.aviso__titulo {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.aviso__detalle {
+  font-size: 14px;
+  color: var(--tinta);
+}
+
+.aviso__cerrar {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ---------- Carga ---------- */
+.cargando {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 4px;
+  color: var(--tenue);
+  font-weight: 600;
+}
+
+.cargando__rueda {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid var(--linea);
+  border-top-color: var(--primario);
+  animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cargando__rueda {
+    animation-duration: 2.4s;
+  }
+}
+
+/* ---------- Pie ---------- */
+.desarrollador {
+  margin-top: auto;
+  padding: 18px 16px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--tenue);
+}
+
+.desarrollador__logo {
+  width: 32px;
+  height: 32px;
+  box-sizing: content-box;
+  padding: 5px;
+  background: #ffffff; /* el logo tiene texto negro: siempre sobre blanco */
+  border: 1px solid var(--linea);
+  border-radius: 8px;
+  image-rendering: pixelated;
+}
+
+@media (max-width: 360px) {
+  .grupo__fila {
+    grid-template-columns: 1fr;
+  }
+}
