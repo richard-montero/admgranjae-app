@@ -7,6 +7,8 @@ export const MENSAJES: Record<CodigoError, string> = {
   NO_REGISTRADO: "Este número no está registrado. Verifique el número o consulte con la administración.",
   NO_DISPONIBLE: "Esta cría no está disponible o no está asignada a usted.",
   DUPLICADO: "Ya existe un registro para esa fecha en esta cría. Elija otra fecha.",
+  SIN_REGISTRO:
+    "No hay un registro de esta cría en esa fecha. Primero cargue los datos del día con «Registrar datos».",
   FECHA_FUERA_RANGO: "La fecha ya no está permitida. Vuelva a abrir la cría para ver el rango actualizado.",
   DATOS_INVALIDOS: "Revise los datos marcados.",
   SESION: "Su sesión terminó. Ingrese nuevamente.",

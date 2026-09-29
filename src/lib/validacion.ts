@@ -1,5 +1,11 @@
 import type { RangoFechas } from "../types/cria";
-import type { DatosRegistro, EntradaRegistro, ErroresRegistro } from "../types/registro";
+import type {
+  DatosRegistro,
+  EntradaRegistro,
+  EntradaTemperaturas,
+  ErroresRegistro,
+  Temperaturas,
+} from "../types/registro";
 import { esFechaISO, formatearFecha } from "./fechas";
 
 /**
@@ -44,6 +50,29 @@ export function validarFecha(fecha: string, rango: Pick<RangoFechas, "fechaMin" 
   if (f > rango.fechaMax) return { ok: false, error: "No se pueden registrar fechas futuras." };
   if (f < rango.fechaMin) return { ok: false, error: `La fecha debe ser desde el ${formatearFecha(rango.fechaMin)}.` };
   return { ok: true, valor: f };
+}
+
+export type ResultadoTemperaturas =
+  | { valido: true; datos: Temperaturas }
+  | { valido: false; errores: ErroresRegistro };
+
+/** Validación del botón "Registrar temperatura": solo los 3 campos de temperatura. */
+export function validarTemperaturas(entrada: EntradaTemperaturas): ResultadoTemperaturas {
+  const tempMna = validarTemperatura(entrada.tempMna);
+  const tempTarde = validarTemperatura(entrada.tempTarde);
+  const tempNoche = validarTemperatura(entrada.tempNoche);
+
+  if (!tempMna.ok || !tempTarde.ok || !tempNoche.ok) {
+    const errores: ErroresRegistro = {};
+    if (!tempMna.ok) errores.tempMna = tempMna.error;
+    if (!tempTarde.ok) errores.tempTarde = tempTarde.error;
+    if (!tempNoche.ok) errores.tempNoche = tempNoche.error;
+    return { valido: false, errores };
+  }
+  return {
+    valido: true,
+    datos: { DtoTempMna: tempMna.valor, DtoTempTarde: tempTarde.valor, DtoTempNoche: tempNoche.valor },
+  };
 }
 
 export type ResultadoRegistro =

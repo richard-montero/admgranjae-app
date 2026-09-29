@@ -1,6 +1,6 @@
 import type { CriaDetalle } from "../types/cria";
 import type { Granja } from "../types/granja";
-import type { DatosRegistro } from "../types/registro";
+import type { DatosRegistro, RegistroTemperaturas, Temperaturas } from "../types/registro";
 import type { Sesion } from "../types/usuario";
 import { ErrorApi, esCodigoError } from "./errores";
 
@@ -73,4 +73,28 @@ export function getCria(token: string, idCria: number): Promise<CriaDetalle> {
 
 export function insertarRegistroCria(token: string, idCria: number, datos: DatosRegistro): Promise<{ ok: true }> {
   return solicitar<{ ok: true }>("registro", { metodo: "POST", token, cuerpo: { idCria, ...datos } });
+}
+
+/** Temperaturas del registro de esa fecha, o null si la cría no tiene registro ese día. */
+export async function getTemperaturasRegistro(
+  token: string,
+  idCria: number,
+  fecha: string,
+): Promise<RegistroTemperaturas | null> {
+  const ruta = `temperatura?id=${encodeURIComponent(idCria)}&fecha=${encodeURIComponent(fecha)}`;
+  const { registro } = await solicitar<{ registro: RegistroTemperaturas | null }>(ruta, { token });
+  return registro;
+}
+
+export function actualizarTemperaturas(
+  token: string,
+  idCria: number,
+  fecha: string,
+  temperaturas: Temperaturas,
+): Promise<{ ok: true }> {
+  return solicitar<{ ok: true }>("temperatura", {
+    metodo: "POST",
+    token,
+    cuerpo: { idCria, fecha, ...temperaturas },
+  });
 }

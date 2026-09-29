@@ -228,6 +228,18 @@ img {
   overflow-wrap: anywhere;
 }
 
+.cria__acciones {
+  flex: none;
+  display: grid;
+  gap: 6px;
+}
+
+.cria__acciones .boton {
+  min-height: 40px;
+  padding: 8px 12px;
+  font-size: 15px;
+}
+
 .cria__id {
   font-size: 14px;
   color: var(--tenue);
@@ -268,7 +280,8 @@ img {
 
 .boton--secundario {
   background: var(--superficie);
-  border-color: var(--linea);
+  border-color: var(--primario);
+  color: var(--primario);
 }
 
 .boton--fantasma {

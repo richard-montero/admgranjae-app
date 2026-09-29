@@ -7,8 +7,9 @@ import { MensajeExito } from "../components/MensajeExito";
 import { useGranjas } from "../hooks/useGranjas";
 import { formatearFecha } from "../lib/fechas";
 
-/** Aviso que envía GestionCria después de guardar. */
+/** Aviso que envían GestionCria y TemperaturaCria después de guardar. */
 export interface AvisoGuardado {
+  titulo: string;
   galpon: string;
   idCria: number;
   fecha: string;
@@ -31,7 +32,7 @@ export function Inicio() {
     <main className="pagina">
       {exito && (
         <MensajeExito
-          titulo="Registro guardado"
+          titulo={exito.titulo}
           detalle={`${exito.galpon} · Cría N.º ${exito.idCria} · ${formatearFecha(exito.fecha)}`}
           onCerrar={() => setExito(null)}
         />

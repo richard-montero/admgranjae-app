@@ -5,6 +5,7 @@ export type CodigoError =
   | "NO_REGISTRADO"
   | "NO_DISPONIBLE"
   | "DUPLICADO"
+  | "SIN_REGISTRO"
   | "FECHA_FUERA_RANGO"
   | "DATOS_INVALIDOS"
   | "SESION"

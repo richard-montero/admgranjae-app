@@ -25,6 +25,7 @@ Celular (React)  →  /api/*  →  Netlify Functions  →  MySQL (ramnsoftware.c
 | `/login` | Teléfono (precargado con el último usado) + **Ingresar** |
 | `/` | Empresa, encargado y granjas con sus crías activas |
 | `/cria/:id` | Datos de la cría, último registro y formulario diario |
+| `/cria/:id/temperatura` | Modificar solo las temperaturas de una fecha ya registrada |
 
 ### API (Netlify Functions)
 
@@ -34,19 +35,21 @@ Celular (React)  →  /api/*  →  Netlify Functions  →  MySQL (ramnsoftware.c
 | `GET /api/granjas` | Crías activas del encargado agrupadas por granja (§9). |
 | `GET /api/cria?id=` | Última fecha y rango permitido (§11–12). |
 | `POST /api/registro` | Inserta en `AVEnG_Cria_Dto` (§13–16). |
+| `GET /api/temperatura?id=&fecha=` | Temperaturas del registro de esa fecha (`null` si no existe). |
+| `POST /api/temperatura` | Actualiza **solo** `DtoTempMna`, `DtoTempTarde` y `DtoTempNoche` de un registro existente. Sin registro → rechazado. |
 
 ### Estructura
 
 ```
 netlify.toml · public/_redirects · .env.example
 netlify/
-  functions/   login.ts · granjas.ts · cria.ts · registro.ts
+  functions/   login.ts · granjas.ts · cria.ts · registro.ts · temperatura.ts
   lib/         db.ts · consultas.ts · sesion.ts · respuestas.ts
 src/
-  components/  Header · GranjaCard · CriaCard · RegistroCriaForm · CampoNumero · Cargando · MensajeError · MensajeExito · Desarrollador
-  pages/       Login · Inicio · GestionCria
+  components/  Header · GranjaCard · CriaCard · RegistroCriaForm · TemperaturasForm · CamposTemperatura · FichaCria · VolverAMisCrias · CampoNumero · Cargando · MensajeError · MensajeExito · Desarrollador
+  pages/       Login · Inicio · GestionCria · TemperaturaCria
   routes/      AppRoutes · RutaProtegida
-  hooks/       useUsuario · useGranjas · useCria · useConsulta
+  hooks/       useUsuario · useGranjas · useCria · useTemperaturasRegistro · useIdCria · useConsulta
   context/     UsuarioContext
   lib/         api · validacion · fechas · errores · almacenamiento
   types/       usuario · granja · cria · registro · api
@@ -63,6 +66,7 @@ src/
 - **Peso promedio (g) / Consumo (g):** ≥ 0, máximo 2 decimales, acepta coma o punto. Vacío → 0.
 - **Temperaturas (°C):** enteros, pueden ser negativos (botón ±). Vacío → NULL.
 - Después de guardar se vuelve a la lista de crías con el mensaje de confirmación.
+- **Registrar temperatura:** se elige una fecha entre el inicio de la cría y el último registro; se cargan las temperaturas actuales y solo esas 3 columnas se actualizan. Si la cría no tiene registro en esa fecha, no se permite modificar (lo valida también el servidor).
 - En el dispositivo solo se guarda el teléfono (`localStorage`). La sesión (`sessionStorage`) dura hasta cerrar la pestaña o 12 horas.
 
 ---
@@ -73,7 +77,7 @@ src/
 
 1. **Habilitar MySQL remoto:** cPanel → *Remote MySQL* → agregar el host `%`. Las IP de Netlify cambian; sin esto, la app mostrará "No se pudo conectar con el servidor".
 2. **Cambiar la contraseña** del usuario MySQL, porque fue compartida en texto durante el desarrollo.
-3. Comprobar que ese usuario tiene permiso **SELECT** en las tablas consultadas e **INSERT** en `AVEnG_Cria_Dto`.
+3. Comprobar que ese usuario tiene permiso **SELECT** en las tablas consultadas e **INSERT** y **UPDATE** en `AVEnG_Cria_Dto` (UPDATE lo usa "Registrar temperatura").
 
 ### 2. GitHub
 
@@ -139,8 +143,17 @@ Marque cada punto en la URL pública, preferiblemente desde un celular.
 - [ ] Duplicado (dos celulares guardan la misma cría y fecha) → "Ya existe un registro para esa fecha…".
 - [ ] Error de inserción (p. ej. variables mal configuradas) → mensaje comprensible, sin detalles técnicos.
 
+**Registrar temperatura**
+- [ ] El botón aparece debajo de "Registrar datos" en cada cría.
+- [ ] Al elegir una fecha registrada se muestran sus temperaturas actuales.
+- [ ] Guardar cambia solo las temperaturas (mortalidad, descarte, peso y consumo quedan igual en la BD).
+- [ ] Vaciar una temperatura → queda NULL.
+- [ ] Fecha sin registro de esa cría → "No hay un registro de esta cría en esa fecha…" y no hay formulario.
+- [ ] Cría sin ningún registro → aviso "Esta cría todavía no tiene registros".
+- [ ] Si falla con error inesperado, revisar que el usuario MySQL tenga permiso UPDATE.
+
 **Navegación**
-- [ ] Abrir directamente `https://<su-sitio>/cria/<id>` y refrescar → no aparece pantalla en blanco.
+- [ ] Abrir directamente `https://<su-sitio>/cria/<id>` y `/cria/<id>/temperatura` y refrescar → no aparece pantalla en blanco.
 - [ ] Sin sesión, abrir `/cria/<id>` → pide teléfono y luego vuelve a esa cría.
 - [ ] `/cria/<id>` de una cría ajena o cerrada → "Esta cría no está disponible…".
 - [ ] Dirección inexistente → redirige a la lista.

@@ -1,27 +1,20 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Cargando } from "../components/Cargando";
+import { FichaCria } from "../components/FichaCria";
 import { MensajeError } from "../components/MensajeError";
 import { RegistroCriaForm } from "../components/RegistroCriaForm";
+import { VolverAMisCrias } from "../components/VolverAMisCrias";
 import { useCria } from "../hooks/useCria";
+import { useIdCria } from "../hooks/useIdCria";
 import { MENSAJES } from "../lib/errores";
 import { formatearFecha } from "../lib/fechas";
-import type { CriaDetalle } from "../types/cria";
 import type { DatosRegistro } from "../types/registro";
 import type { AvisoGuardado } from "./Inicio";
 
-function VolverAMisCrias() {
-  return (
-    <Link to="/" className="boton boton--fantasma">
-      Volver a mis crías
-    </Link>
-  );
-}
-
 export function GestionCria() {
-  const { id } = useParams();
-  const idCria = id && /^\d+$/.test(id) ? Number(id) : null;
+  const idCria = useIdCria();
 
-  if (idCria === null || idCria <= 0) {
+  if (idCria === null) {
     return (
       <main className="pagina">
         <MensajeError>{MENSAJES.NO_DISPONIBLE}</MensajeError>
@@ -54,7 +47,12 @@ function GestionCriaValida({ idCria }: { idCria: number }) {
   }
 
   const alGuardar = (datos: DatosRegistro) => {
-    const exito: AvisoGuardado = { galpon: cria.GlpNombre, idCria: cria.IdCria, fecha: datos.DtoFecha };
+    const exito: AvisoGuardado = {
+      titulo: "Registro guardado",
+      galpon: cria.GlpNombre,
+      idCria: cria.IdCria,
+      fecha: datos.DtoFecha,
+    };
     navegar("/", { state: { exito } });
   };
 
@@ -74,26 +72,5 @@ function GestionCriaValida({ idCria }: { idCria: number }) {
         <RegistroCriaForm cria={cria} onGuardado={alGuardar} />
       )}
     </main>
-  );
-}
-
-function FichaCria({ cria }: { cria: CriaDetalle }) {
-  return (
-    <section className="ficha" aria-label="Datos de la cría">
-      <p className="etiqueta">{cria.GrjNombre}</p>
-      <h2 className="ficha__titulo">
-        {cria.GlpNombre} <span className="ficha__id">Cría N.º {cria.IdCria}</span>
-      </h2>
-      <dl className="ficha__fechas">
-        <div>
-          <dt>Inicio de la cría</dt>
-          <dd>{formatearFecha(cria.CrFecInicio)}</dd>
-        </div>
-        <div>
-          <dt>Último registro</dt>
-          <dd>{cria.UltFecha ? formatearFecha(cria.UltFecha) : "Sin registros"}</dd>
-        </div>
-      </dl>
-    </section>
   );
 }

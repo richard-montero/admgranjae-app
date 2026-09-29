@@ -1,5 +1,5 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2/promise";
-import type { DatosRegistro } from "../../src/types/registro";
+import type { DatosRegistro, RegistroTemperaturas, Temperaturas } from "../../src/types/registro";
 import type { Usuario } from "../../src/types/usuario";
 import { obtenerPool } from "./db";
 
@@ -147,4 +147,44 @@ export async function insertarRegistroCria(idCria: number, d: DatosRegistro): Pr
     ],
   );
   return resultado.insertId;
+}
+
+interface FilaTemperaturas extends RowDataPacket {
+  DtoFecha: string;
+  DtoTempMna: number | null;
+  DtoTempTarde: number | null;
+  DtoTempNoche: number | null;
+}
+
+/** FLOAT → número con 2 decimales como máximo (evita mostrar 23.299999237). */
+function aTemperatura(valor: number | null): number | null {
+  return valor === null ? null : Math.round(Number(valor) * 100) / 100;
+}
+
+/** Temperaturas del registro de una cría en una fecha, o null si no existe el registro. */
+export async function obtenerTemperaturasRegistro(idCria: number, fecha: string): Promise<RegistroTemperaturas | null> {
+  const [filas] = await obtenerPool().execute<FilaTemperaturas[]>(
+    `SELECT DtoFecha, DtoTempMna, DtoTempTarde, DtoTempNoche
+     FROM AVEnG_Cria_Dto
+     WHERE DtoIdCria = ? AND DtoFecha = ?`,
+    [idCria, fecha],
+  );
+  const f = filas[0];
+  if (!f) return null;
+  return {
+    DtoFecha: String(f.DtoFecha).slice(0, 10),
+    DtoTempMna: aTemperatura(f.DtoTempMna),
+    DtoTempTarde: aTemperatura(f.DtoTempTarde),
+    DtoTempNoche: aTemperatura(f.DtoTempNoche),
+  };
+}
+
+/** Actualiza SOLO las 3 temperaturas del registro existente de esa cría y fecha. */
+export async function actualizarTemperaturas(idCria: number, fecha: string, t: Temperaturas): Promise<void> {
+  await obtenerPool().execute<ResultSetHeader>(
+    `UPDATE AVEnG_Cria_Dto
+     SET DtoTempMna = ?, DtoTempTarde = ?, DtoTempNoche = ?
+     WHERE DtoIdCria = ? AND DtoFecha = ?`,
+    [t.DtoTempMna, t.DtoTempTarde, t.DtoTempNoche, idCria, fecha],
+  );
 }

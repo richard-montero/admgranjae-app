@@ -8,9 +8,14 @@ export function CriaCard({ cria }: { cria: CriaResumen }) {
         <span className="cria__galpon">{cria.GlpNombre}</span>
         <span className="cria__id">Cría N.º {cria.IdCria}</span>
       </div>
-      <Link className="boton boton--primario" to={`/cria/${cria.IdCria}`}>
-        Registrar datos
-      </Link>
+      <div className="cria__acciones">
+        <Link className="boton boton--primario" to={`/cria/${cria.IdCria}`}>
+          Registrar datos
+        </Link>
+        <Link className="boton boton--secundario" to={`/cria/${cria.IdCria}/temperatura`}>
+          Registrar temperatura
+        </Link>
+      </div>
     </li>
   );
 }

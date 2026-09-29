@@ -1,5 +1,4 @@
 import { useRef, useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
 import { useSesionActiva } from "../hooks/useUsuario";
 import { insertarRegistroCria } from "../lib/api";
 import { ErrorApi, mensajeDeError } from "../lib/errores";
@@ -8,7 +7,9 @@ import { validarRegistro } from "../lib/validacion";
 import type { CriaDetalle } from "../types/cria";
 import type { CampoRegistro, DatosRegistro, EntradaRegistro, ErroresRegistro } from "../types/registro";
 import { CampoNumero } from "./CampoNumero";
+import { CamposTemperatura } from "./CamposTemperatura";
 import { MensajeError } from "./MensajeError";
+import { VolverAMisCrias } from "./VolverAMisCrias";
 
 const ORDEN_CAMPOS: CampoRegistro[] = [
   "fecha",
@@ -133,23 +134,7 @@ export function RegistroCriaForm({ cria, onGuardado }: Props) {
         </div>
       </fieldset>
 
-      <fieldset className="grupo">
-        <legend>
-          Temperaturas (°C) <span className="grupo__nota">opcionales</span>
-        </legend>
-        <div className="grupo__temps">
-          <CampoNumero id="tempMna" etiqueta="Mañana 10:00" modo="numeric" placeholder="—" conSigno
-            valor={entrada.tempMna} onCambio={cambiar("tempMna")} error={errores.tempMna}
-            deshabilitado={guardando} />
-          <CampoNumero id="tempTarde" etiqueta="Tarde" modo="numeric" placeholder="—" conSigno
-            valor={entrada.tempTarde} onCambio={cambiar("tempTarde")} error={errores.tempTarde}
-            deshabilitado={guardando} />
-          <CampoNumero id="tempNoche" etiqueta="Noche" modo="numeric" placeholder="—" conSigno
-            valor={entrada.tempNoche} onCambio={cambiar("tempNoche")} error={errores.tempNoche}
-            deshabilitado={guardando} />
-        </div>
-        <p className="campo__ayuda">Use ± para temperaturas bajo cero. Vacío = sin dato.</p>
-      </fieldset>
+      <CamposTemperatura valores={entrada} errores={errores} onCambio={cambiar} deshabilitado={guardando} />
 
       {errorGeneral && <MensajeError>{errorGeneral}</MensajeError>}
 
@@ -157,9 +142,7 @@ export function RegistroCriaForm({ cria, onGuardado }: Props) {
         <button type="submit" className="boton boton--primario boton--grande" disabled={guardando}>
           {guardando ? "Guardando..." : "Guardar"}
         </button>
-        <Link to="/" className="boton boton--fantasma" aria-disabled={guardando || undefined}>
-          Volver a mis crías
-        </Link>
+        <VolverAMisCrias deshabilitado={guardando} />
       </div>
     </form>
   );
