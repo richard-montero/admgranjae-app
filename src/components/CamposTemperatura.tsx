@@ -8,7 +8,7 @@ interface Props {
   deshabilitado?: boolean;
 }
 
-/** Temperaturas de mañana (10:00), tarde y noche. Las usan el registro diario y "Registrar temperatura". */
+/** Temperaturas de mañana (10:00), tarde (15:00) y noche (22:00). Las usan el registro diario y "Registrar temperatura". */
 export function CamposTemperatura({ valores, errores, onCambio, deshabilitado = false }: Props) {
   return (
     <fieldset className="grupo">
@@ -19,10 +19,10 @@ export function CamposTemperatura({ valores, errores, onCambio, deshabilitado = 
         <CampoNumero id="tempMna" etiqueta="Mañana 10:00" modo="numeric" placeholder="—" conSigno
           valor={valores.tempMna} onCambio={onCambio("tempMna")} error={errores.tempMna}
           deshabilitado={deshabilitado} />
-        <CampoNumero id="tempTarde" etiqueta="Tarde" modo="numeric" placeholder="—" conSigno
+        <CampoNumero id="tempTarde" etiqueta="Tarde 15:00" modo="numeric" placeholder="—" conSigno
           valor={valores.tempTarde} onCambio={onCambio("tempTarde")} error={errores.tempTarde}
           deshabilitado={deshabilitado} />
-        <CampoNumero id="tempNoche" etiqueta="Noche" modo="numeric" placeholder="—" conSigno
+        <CampoNumero id="tempNoche" etiqueta="Noche 22:00" modo="numeric" placeholder="—" conSigno
           valor={valores.tempNoche} onCambio={onCambio("tempNoche")} error={errores.tempNoche}
           deshabilitado={deshabilitado} />
       </div>
