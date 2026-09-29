@@ -9,32 +9,77 @@ import { obtenerPool } from "./db";
  * Todas las consultas usan parámetros (?) para evitar inyección SQL.
  */
 
-interface FilaUsuario extends RowDataPacket, Usuario {}
+interface FilaUsuario extends RowDataPacket, Usuario {
+  PerPassw: string | null;
+}
+
+/** Encargado con su contraseña. La contraseña NUNCA se envía al celular. */
+export interface EncargadoConContrasena {
+  usuario: Usuario;
+  /** Emp_Personal.PerPassw: "123" = inicial o reseteada; null = acceso bloqueado. */
+  PerPassw: string | null;
+}
+
+const SQL_ENCARGADO = `
+  SELECT
+      Emp_Personal.IdPersonal,
+      Emp_Personal.PerNombre,
+      Emp_Personal.PerPassw,
+      Empresas.EmpId,
+      Empresas.EmpNombre
+  FROM Emp_Personal
+  INNER JOIN Empresas
+      ON Emp_Personal.PerEmpresa = Empresas.EmpId`;
+
+function aEncargado(f: FilaUsuario): EncargadoConContrasena {
+  return {
+    usuario: {
+      IdPersonal: Number(f.IdPersonal),
+      PerNombre: String(f.PerNombre ?? ""),
+      EmpId: Number(f.EmpId),
+      EmpNombre: String(f.EmpNombre ?? ""),
+    },
+    PerPassw: f.PerPassw === null ? null : String(f.PerPassw),
+  };
+}
 
 /** §7 — Encargado y empresa por teléfono. Si hay varios, el de menor IdPersonal. */
-export async function buscarEncargadoPorTelefono(telefono: string): Promise<Usuario | null> {
+export async function buscarEncargadoPorTelefono(telefono: string): Promise<EncargadoConContrasena | null> {
   const [filas] = await obtenerPool().execute<FilaUsuario[]>(
-    `SELECT
-        Emp_Personal.IdPersonal,
-        Emp_Personal.PerNombre,
-        Empresas.EmpId,
-        Empresas.EmpNombre
-     FROM Emp_Personal
-     INNER JOIN Empresas
-        ON Emp_Personal.PerEmpresa = Empresas.EmpId
+    `${SQL_ENCARGADO}
      WHERE Emp_Personal.PerTelf = ?
      ORDER BY Emp_Personal.IdPersonal ASC
      LIMIT 1`,
     [telefono],
   );
-  const f = filas[0];
-  if (!f) return null;
-  return {
-    IdPersonal: Number(f.IdPersonal),
-    PerNombre: String(f.PerNombre ?? ""),
-    EmpId: Number(f.EmpId),
-    EmpNombre: String(f.EmpNombre ?? ""),
-  };
+  return filas[0] ? aEncargado(filas[0]) : null;
+}
+
+export async function buscarEncargadoPorId(idPersonal: number): Promise<EncargadoConContrasena | null> {
+  const [filas] = await obtenerPool().execute<FilaUsuario[]>(
+    `${SQL_ENCARGADO}
+     WHERE Emp_Personal.IdPersonal = ?`,
+    [idPersonal],
+  );
+  return filas[0] ? aEncargado(filas[0]) : null;
+}
+
+/**
+ * Reemplaza la contraseña inicial por la nueva. Solo actúa si la contraseña
+ * guardada sigue siendo la inicial; devuelve false si ya no lo es.
+ */
+export async function cambiarContrasenaInicial(
+  idPersonal: number,
+  contrasenaInicial: string,
+  nueva: string,
+): Promise<boolean> {
+  const [resultado] = await obtenerPool().execute<ResultSetHeader>(
+    `UPDATE Emp_Personal
+     SET PerPassw = ?
+     WHERE IdPersonal = ? AND BINARY PerPassw = ?`,
+    [nueva, idPersonal, contrasenaInicial],
+  );
+  return resultado.affectedRows > 0;
 }
 
 export interface CriaActiva {

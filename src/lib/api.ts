@@ -1,7 +1,7 @@
 import type { CriaDetalle } from "../types/cria";
 import type { Granja } from "../types/granja";
 import type { DatosRegistro, RegistroTemperaturas, Temperaturas } from "../types/registro";
-import type { Sesion } from "../types/usuario";
+import type { RespuestaLogin, Sesion } from "../types/usuario";
 import { ErrorApi, esCodigoError } from "./errores";
 
 /**
@@ -58,8 +58,14 @@ async function solicitar<T>(ruta: string, { metodo = "GET", token, cuerpo }: Opc
   return datos as T;
 }
 
-export function getUsuarioByTelefono(telefono: string): Promise<Sesion> {
-  return solicitar<Sesion>("login", { metodo: "POST", cuerpo: { telefono } });
+/** Valida teléfono y contraseña. Si la contraseña es la inicial, pide crear una nueva. */
+export function getUsuarioByTelefono(telefono: string, contrasena: string): Promise<RespuestaLogin> {
+  return solicitar<RespuestaLogin>("login", { metodo: "POST", cuerpo: { telefono, contrasena } });
+}
+
+/** Reemplaza la contraseña inicial (123) y devuelve la sesión para ingresar. */
+export function cambiarContrasenaInicial(tokenCambio: string, nueva: string): Promise<Sesion> {
+  return solicitar<Sesion>("cambiar-contrasena", { metodo: "POST", cuerpo: { tokenCambio, nueva } });
 }
 
 export function getGranjasByEncargado(token: string): Promise<Granja[]> {

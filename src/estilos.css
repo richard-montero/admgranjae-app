@@ -317,16 +317,21 @@ img {
 
 .login__marca {
   display: grid;
-  justify-items: start;
-  gap: 4px;
+  gap: 8px;
+}
+
+.login__encabezado {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
 .login__logo {
+  flex: none;
   width: 64px;
   height: 64px;
   box-sizing: content-box;
   padding: 6px;
-  margin-bottom: 10px;
   background: #ffffff; /* el logo tiene texto negro: siempre sobre blanco */
   border: 1px solid var(--linea);
   border-radius: 12px;
@@ -334,10 +339,15 @@ img {
 }
 
 .login__titulo {
+  min-width: 0;
   margin: 0;
-  font: 700 34px/1.05 var(--f-display);
+  font: 700 clamp(24px, 7.4vw, 32px)/1.05 var(--f-display);
   color: var(--primario);
-  text-wrap: balance;
+}
+
+/* "Granjas de Engorde" se mantiene junto en la segunda línea */
+.login__titulo-linea {
+  white-space: nowrap;
 }
 
 .login__form {
@@ -345,7 +355,7 @@ img {
   gap: 14px;
 }
 
-.login input {
+.login input[type="tel"] {
   font-size: 22px;
   letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
@@ -401,6 +411,19 @@ img {
   border-radius: var(--radio);
   background: var(--fondo);
   font-size: 20px;
+  cursor: pointer;
+}
+
+.campo__ver {
+  flex: none;
+  min-width: 84px;
+  min-height: 48px;
+  padding: 0 10px;
+  border: 1.5px solid var(--linea);
+  border-radius: var(--radio);
+  background: var(--fondo);
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
 }
 

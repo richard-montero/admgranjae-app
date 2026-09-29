@@ -123,3 +123,23 @@ export function validarRegistro(
     },
   };
 }
+
+/* ---------- Contraseña del encargado (Emp_Personal.PerPassw, varchar(25)) ---------- */
+
+/** Contraseña inicial al crear el encargado o al resetear su contraseña. */
+export const CONTRASENA_INICIAL = "123";
+export const CONTRASENA_MIN = 6;
+export const CONTRASENA_MAX = 25;
+
+/** Caracteres imprimibles que admite la columna (latin1): letras, números, símbolos, tildes y ñ. */
+const CARACTERES_PERMITIDOS = /^[\x20-\x7E -ÿ]*$/;
+
+/** Devuelve el error de la nueva contraseña o null si es válida. */
+export function errorNuevaContrasena(nueva: string): string | null {
+  if (nueva.length < CONTRASENA_MIN) return `Use al menos ${CONTRASENA_MIN} caracteres.`;
+  if (nueva.length > CONTRASENA_MAX) return `Use como máximo ${CONTRASENA_MAX} caracteres.`;
+  if (nueva !== nueva.trim()) return "No use espacios al inicio ni al final.";
+  if (!CARACTERES_PERMITIDOS.test(nueva)) return "Use solo letras, números y símbolos comunes (sin emojis).";
+  if (nueva === CONTRASENA_INICIAL) return "La nueva contraseña no puede ser 123.";
+  return null;
+}

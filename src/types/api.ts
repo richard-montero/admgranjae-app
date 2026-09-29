@@ -3,6 +3,9 @@ import type { ErroresRegistro } from "./registro";
 export type CodigoError =
   | "CONEXION"
   | "NO_REGISTRADO"
+  | "CONTRASENA_INCORRECTA"
+  | "CONTRASENA_BLOQUEADA"
+  | "CONTRASENA_INVALIDA"
   | "NO_DISPONIBLE"
   | "DUPLICADO"
   | "SIN_REGISTRO"

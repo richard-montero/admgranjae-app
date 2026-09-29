@@ -22,7 +22,7 @@ Celular (React)  →  /api/*  →  Netlify Functions  →  MySQL (ramnsoftware.c
 
 | Ruta | Pantalla |
 |---|---|
-| `/login` | Teléfono (precargado con el último usado) + **Ingresar** |
+| `/login` | Teléfono (precargado con el último usado) + contraseña + **Ingresar**. Si la contraseña es la inicial (123), pide crear una nueva. |
 | `/` | Empresa, encargado y granjas con sus crías activas |
 | `/cria/:id` | Datos de la cría, último registro y formulario diario |
 | `/cria/:id/temperatura` | Modificar solo las temperaturas de una fecha ya registrada |
@@ -31,7 +31,8 @@ Celular (React)  →  /api/*  →  Netlify Functions  →  MySQL (ramnsoftware.c
 
 | Endpoint | Función |
 |---|---|
-| `POST /api/login` | Valida el teléfono (§7). Si hay varios registros, toma el de menor `IdPersonal`. |
+| `POST /api/login` | Valida teléfono (§7) y contraseña (`Emp_Personal.PerPassw`). Si hay varios registros, toma el de menor `IdPersonal`. |
+| `POST /api/cambiar-contrasena` | Reemplaza la contraseña inicial 123 por la nueva (con un token de 10 minutos que entrega el login). |
 | `GET /api/granjas` | Crías activas del encargado agrupadas por granja (§9). |
 | `GET /api/cria?id=` | Última fecha, rango permitido (§11–12) y unidad de alimento del galpón (`Emp_UndRecAli`). |
 | `POST /api/registro` | Inserta en `AVEnG_Cria_Dto` (§13–16). Convierte el consumo a kg con `UndAliEqKg`. |
@@ -43,10 +44,10 @@ Celular (React)  →  /api/*  →  Netlify Functions  →  MySQL (ramnsoftware.c
 ```
 netlify.toml · public/_redirects · .env.example
 netlify/
-  functions/   login.ts · granjas.ts · cria.ts · registro.ts · temperatura.ts
+  functions/   login.ts · cambiar-contrasena.ts · granjas.ts · cria.ts · registro.ts · temperatura.ts
   lib/         db.ts · consultas.ts · sesion.ts · respuestas.ts
 src/
-  components/  Header · GranjaCard · CriaCard · RegistroCriaForm · TemperaturasForm · CamposTemperatura · FichaCria · VolverAMisCrias · CampoNumero · Cargando · MensajeError · MensajeExito · Desarrollador
+  components/  Header · GranjaCard · CriaCard · RegistroCriaForm · TemperaturasForm · CampoContrasena · CamposTemperatura · FichaCria · VolverAMisCrias · CampoNumero · Cargando · MensajeError · MensajeExito · Desarrollador
   pages/       Login · Inicio · GestionCria · TemperaturaCria
   routes/      AppRoutes · RutaProtegida
   hooks/       useUsuario · useGranjas · useCria · useTemperaturasRegistro · useIdCria · useConsulta
@@ -60,6 +61,13 @@ src/
 ---
 
 ## Reglas implementadas
+
+- **Acceso:** teléfono + contraseña (`Emp_Personal.PerPassw`, distingue mayúsculas y minúsculas).
+  - Teléfono inexistente → "Este número no está registrado…".
+  - Contraseña **NULL** → no ingresa: "…Solicite a la administración que resetee su contraseña…".
+  - Contraseña **123** (inicial o reseteada) → formulario **Cree su nueva contraseña** (6 a 25 caracteres, escrita dos veces, distinta de 123). Se guarda en `PerPassw` y entra a la app.
+  - Para resetear: la administración pone `PerPassw = '123'` en la tabla.
+  - En el dispositivo solo se guarda el teléfono; la contraseña nunca.
 
 - **Fecha:** mínima = último registro + 1 día (o inicio de la cría si no hay registros); máxima = hoy, **hora de Bolivia** (`America/La_Paz`), calculada en el servidor.
 - **Mortalidad / Descarte:** enteros ≥ 0 (máx. 8.388.607, límite de MEDIUMINT). Vacío → 0.
@@ -79,7 +87,7 @@ src/
 
 1. **Habilitar MySQL remoto:** cPanel → *Remote MySQL* → agregar el host `%`. Las IP de Netlify cambian; sin esto, la app mostrará "No se pudo conectar con el servidor".
 2. **Cambiar la contraseña** del usuario MySQL, porque fue compartida en texto durante el desarrollo.
-3. Comprobar que ese usuario tiene permiso **SELECT** en las tablas consultadas e **INSERT** y **UPDATE** en `AVEnG_Cria_Dto` (UPDATE lo usa "Registrar temperatura").
+3. Comprobar que ese usuario tiene permiso **SELECT** en las tablas consultadas, **INSERT** y **UPDATE** en `AVEnG_Cria_Dto` (UPDATE lo usa "Registrar temperatura") y **UPDATE** en `Emp_Personal` (cambio de la contraseña inicial).
 
 ### 2. GitHub
 
@@ -123,8 +131,13 @@ Para compartirla basta con enviar la URL (por ejemplo por WhatsApp). Solo podrá
 Marque cada punto en la URL pública, preferiblemente desde un celular.
 
 **Acceso**
-- [ ] Número válido → entra y muestra empresa y encargado correctos.
 - [ ] Número inexistente → "Este número no está registrado…".
+- [ ] Contraseña NULL → mensaje de solicitar reseteo; no entra.
+- [ ] Contraseña incorrecta (o con mayúsculas distintas) → "La contraseña es incorrecta…".
+- [ ] Contraseña 123 → pide crear una nueva; menos de 6 caracteres o distinta en la repetición → error.
+- [ ] Nueva contraseña válida → queda guardada en `PerPassw` y entra a la app.
+- [ ] Siguiente ingreso con 123 → rechazado; con la nueva → entra.
+- [ ] Contraseña propia correcta → entra y muestra empresa y encargado correctos.
 - [ ] Al volver a abrir, el último número aparece precargado.
 - [ ] **Salir** → vuelve al acceso con el número precargado.
 
@@ -186,5 +199,6 @@ Marque cada punto en la URL pública, preferiblemente desde un celular.
 
 ## Consideraciones
 
-- El acceso es solo por teléfono (decisión de negocio): quien conozca un número registrado puede ingresar.
+- **Contraseñas en texto plano:** `PerPassw` es `varchar(25)` y el reseteo se hace escribiendo `123` en la tabla, por eso la contraseña se guarda tal cual (no cifrada). Quien tenga acceso a la base de datos puede leerlas. Para cifrarlas haría falta ampliar la columna (≥ 60 caracteres) y cambiar el procedimiento de reseteo.
+- No hay límite de intentos de ingreso: alguien podría probar contraseñas repetidamente con un teléfono conocido.
 - `DtoPesoProm` y `DtoConsumo` son FLOAT: los valores grandes con decimales pueden guardarse con una pequeña diferencia de redondeo. Si se requiere exactitud total, convendría `DECIMAL(10,2)` (cambio de base de datos que no se aplicó).

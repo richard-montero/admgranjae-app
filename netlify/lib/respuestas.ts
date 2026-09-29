@@ -2,7 +2,7 @@ import { MENSAJES } from "../../src/lib/errores";
 import type { CodigoError, RespuestaError } from "../../src/types/api";
 import type { ErroresRegistro } from "../../src/types/registro";
 import { ErrorConfiguracion } from "./db";
-import { verificarToken, type DatosSesion } from "./sesion";
+import { tokenDeCabecera, verificarToken, type DatosSesion } from "./sesion";
 
 /** Error controlado que se devuelve al celular con un código y un mensaje claro. */
 export class ErrorHttp extends Error {
@@ -73,7 +73,7 @@ function convertirError(err: unknown): Response {
 }
 
 export function exigirSesion(req: Request): DatosSesion {
-  const sesion = verificarToken(req.headers.get("authorization"));
+  const sesion = verificarToken(tokenDeCabecera(req.headers.get("authorization")), "sesion");
   if (!sesion) throw new ErrorHttp(401, "SESION");
   return sesion;
 }

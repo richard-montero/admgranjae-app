@@ -5,6 +5,11 @@ import type { ErroresRegistro } from "../types/registro";
 export const MENSAJES: Record<CodigoError, string> = {
   CONEXION: "No se pudo conectar con el servidor. Revise su conexión e intente de nuevo.",
   NO_REGISTRADO: "Este número no está registrado. Verifique el número o consulte con la administración.",
+  CONTRASENA_INCORRECTA: "La contraseña es incorrecta. Verifique e intente de nuevo.",
+  CONTRASENA_BLOQUEADA:
+    "No tiene una contraseña habilitada. Solicite a la administración que resetee su contraseña para poder ingresar.",
+  CONTRASENA_INVALIDA:
+    "La nueva contraseña debe tener entre 6 y 25 caracteres, sin espacios al inicio o al final, y no puede ser 123.",
   NO_DISPONIBLE: "Esta cría no está disponible o no está asignada a usted.",
   DUPLICADO: "Ya existe un registro para esa fecha en esta cría. Elija otra fecha.",
   SIN_REGISTRO:
