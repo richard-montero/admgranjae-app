@@ -1,5 +1,6 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import type { DatosRegistro, RegistroTemperaturas, Temperaturas } from "../../src/types/registro";
+import type { UnidadAlimento } from "../../src/types/cria";
 import type { Usuario } from "../../src/types/usuario";
 import { obtenerPool } from "./db";
 
@@ -187,4 +188,35 @@ export async function actualizarTemperaturas(idCria: number, fecha: string, t: T
      WHERE DtoIdCria = ? AND DtoFecha = ?`,
     [t.DtoTempMna, t.DtoTempTarde, t.DtoTempNoche, idCria, fecha],
   );
+}
+
+interface FilaUnidadAlimento extends RowDataPacket {
+  IdUndAli: number;
+  UndAliNom: string | null;
+  UndAliEqKg: number | string | null;
+}
+
+/** Unidad de alimento del galpón de la cría y su factor de conversión a kg. */
+export async function obtenerUnidadAlimento(idCria: number): Promise<UnidadAlimento | null> {
+  const [filas] = await obtenerPool().execute<FilaUnidadAlimento[]>(
+    `SELECT
+        Emp_UndRecAli.IdUndAli,
+        Emp_UndRecAli.UndAliNom,
+        Emp_UndRecAli.UndAliEqKg
+     FROM Emp_UndRecAli
+     INNER JOIN (AVEn_Galpones
+        INNER JOIN AVEnG_Cria
+        ON AVEn_Galpones.IdGalpon = AVEnG_Cria.CrIdGalpon)
+     ON Emp_UndRecAli.IdUndAli = AVEn_Galpones.IdUndRecAli
+     WHERE AVEnG_Cria.IdCria = ?`,
+    [idCria],
+  );
+  const f = filas[0];
+  if (!f) return null;
+  return {
+    IdUndAli: Number(f.IdUndAli),
+    UndAliNom: String(f.UndAliNom ?? "").trim(),
+    // DECIMAL llega como texto desde mysql2
+    UndAliEqKg: f.UndAliEqKg === null ? NaN : Number(f.UndAliEqKg),
+  };
 }

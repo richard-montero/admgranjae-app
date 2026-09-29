@@ -12,5 +12,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["functions", "lib", "../src/lib/fechas.ts", "../src/lib/validacion.ts", "../src/lib/errores.ts", "../src/types"]
+  "include": ["functions", "lib", "../src/lib/fechas.ts", "../src/lib/validacion.ts", "../src/lib/errores.ts", "../src/lib/alimento.ts", "../src/types"]
 }

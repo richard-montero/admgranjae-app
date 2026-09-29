@@ -3,7 +3,8 @@ import { useSesionActiva } from "../hooks/useUsuario";
 import { insertarRegistroCria } from "../lib/api";
 import { ErrorApi, mensajeDeError } from "../lib/errores";
 import { formatearFecha } from "../lib/fechas";
-import { validarRegistro } from "../lib/validacion";
+import { convertirConsumoAKg, errorConsumoSinUnidad, unidadValida } from "../lib/alimento";
+import { validarDecimal2, validarRegistro } from "../lib/validacion";
 import type { CriaDetalle } from "../types/cria";
 import type { CampoRegistro, DatosRegistro, EntradaRegistro, ErroresRegistro } from "../types/registro";
 import { CampoNumero } from "./CampoNumero";
@@ -21,6 +22,8 @@ const ORDEN_CAMPOS: CampoRegistro[] = [
   "tempTarde",
   "tempNoche",
 ];
+
+const FORMATO_KG = new Intl.NumberFormat("es-BO", { maximumFractionDigits: 2 });
 
 interface Props {
   cria: CriaDetalle;
@@ -65,6 +68,11 @@ export function RegistroCriaForm({ cria, onGuardado }: Props) {
       mostrarErrores(resultado.errores);
       return;
     }
+    const errorUnidad = errorConsumoSinUnidad(resultado.datos.DtoConsumo, cria.unidadAlimento);
+    if (errorUnidad) {
+      mostrarErrores({ consumo: errorUnidad });
+      return;
+    }
 
     setGuardando(true);
     try {
@@ -85,6 +93,15 @@ export function RegistroCriaForm({ cria, onGuardado }: Props) {
     cria.fechaMin === cria.fechaMax
       ? `Solo se puede registrar hoy, ${formatearFecha(cria.fechaMax)}.`
       : `Permitido del ${formatearFecha(cria.fechaMin)} al ${formatearFecha(cria.fechaMax)}.`;
+
+  const unidad = cria.unidadAlimento;
+  const nombreUnidad = unidadValida(unidad) ? unidad.UndAliNom || "unidad" : "sin unidad";
+  const consumoIngresado = validarDecimal2(entrada.consumo);
+  const ayudaConsumo = !unidadValida(unidad)
+    ? "Sin unidad configurada: deje vacío"
+    : consumoIngresado.ok && consumoIngresado.valor > 0
+      ? `Se guardará como ${FORMATO_KG.format(convertirConsumoAKg(consumoIngresado.valor, unidad))} kg`
+      : "Hasta 2 decimales";
 
   return (
     <form className="formulario" onSubmit={guardar} noValidate ref={refForm}>
@@ -128,7 +145,7 @@ export function RegistroCriaForm({ cria, onGuardado }: Props) {
           <CampoNumero id="pesoProm" etiqueta="Peso promedio (g)" ayuda="Hasta 2 decimales" modo="decimal"
             placeholder="0" valor={entrada.pesoProm} onCambio={cambiar("pesoProm")} error={errores.pesoProm}
             deshabilitado={guardando} />
-          <CampoNumero id="consumo" etiqueta="Consumo (g)" ayuda="Hasta 2 decimales" modo="decimal"
+          <CampoNumero id="consumo" etiqueta={`Consumo (${nombreUnidad})`} ayuda={ayudaConsumo} modo="decimal"
             placeholder="0" valor={entrada.consumo} onCambio={cambiar("consumo")} error={errores.consumo}
             deshabilitado={guardando} />
         </div>

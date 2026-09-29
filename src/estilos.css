@@ -507,7 +507,19 @@ img {
 .grupo__fila {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 5px 12px;
+}
+
+/* Etiqueta, campo y ayuda alineados entre columnas aunque una etiqueta ocupe 2 líneas */
+@supports (grid-template-rows: subgrid) {
+  .grupo__fila .campo {
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+  }
+
+  .grupo__fila .campo__etiqueta {
+    align-self: end;
+  }
 }
 
 .grupo__temps {

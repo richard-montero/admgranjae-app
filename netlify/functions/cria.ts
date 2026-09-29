@@ -1,6 +1,6 @@
 import { calcularRango } from "../../src/lib/fechas";
 import type { CriaDetalle } from "../../src/types/cria";
-import { buscarCriaAsignada, obtenerFechasCria } from "../lib/consultas";
+import { buscarCriaAsignada, obtenerFechasCria, obtenerUnidadAlimento } from "../lib/consultas";
 import { ErrorHttp, exigirSesion, leerId, manejador, responder } from "../lib/respuestas";
 
 /** GET /api/cria?id=8  →  CriaDetalle (datos, última fecha y rango permitido) */
@@ -19,6 +19,7 @@ export default manejador("GET", async (req) => {
     CrFecInicio: fechas.CrFecInicio,
     UltFecha: fechas.UltFecha,
     ...calcularRango(fechas.UltFecha, fechas.CrFecInicio),
+    unidadAlimento: await obtenerUnidadAlimento(idCria),
   };
   return responder(200, detalle);
 });

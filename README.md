@@ -33,8 +33,8 @@ Celular (React)  →  /api/*  →  Netlify Functions  →  MySQL (ramnsoftware.c
 |---|---|
 | `POST /api/login` | Valida el teléfono (§7). Si hay varios registros, toma el de menor `IdPersonal`. |
 | `GET /api/granjas` | Crías activas del encargado agrupadas por granja (§9). |
-| `GET /api/cria?id=` | Última fecha y rango permitido (§11–12). |
-| `POST /api/registro` | Inserta en `AVEnG_Cria_Dto` (§13–16). |
+| `GET /api/cria?id=` | Última fecha, rango permitido (§11–12) y unidad de alimento del galpón (`Emp_UndRecAli`). |
+| `POST /api/registro` | Inserta en `AVEnG_Cria_Dto` (§13–16). Convierte el consumo a kg con `UndAliEqKg`. |
 | `GET /api/temperatura?id=&fecha=` | Temperaturas del registro de esa fecha (`null` si no existe). |
 | `POST /api/temperatura` | Actualiza **solo** `DtoTempMna`, `DtoTempTarde` y `DtoTempNoche` de un registro existente. Sin registro → rechazado. |
 
@@ -51,7 +51,7 @@ src/
   routes/      AppRoutes · RutaProtegida
   hooks/       useUsuario · useGranjas · useCria · useTemperaturasRegistro · useIdCria · useConsulta
   context/     UsuarioContext
-  lib/         api · validacion · fechas · errores · almacenamiento
+  lib/         api · validacion · fechas · errores · alimento · almacenamiento
   types/       usuario · granja · cria · registro · api
 ```
 
@@ -63,7 +63,9 @@ src/
 
 - **Fecha:** mínima = último registro + 1 día (o inicio de la cría si no hay registros); máxima = hoy, **hora de Bolivia** (`America/La_Paz`), calculada en el servidor.
 - **Mortalidad / Descarte:** enteros ≥ 0 (máx. 8.388.607, límite de MEDIUMINT). Vacío → 0.
-- **Peso promedio (g) / Consumo (g):** ≥ 0, máximo 2 decimales, acepta coma o punto. Vacío → 0.
+- **Peso promedio (g):** ≥ 0, máximo 2 decimales, acepta coma o punto. Vacío → 0.
+- **Consumo:** se escribe en la **unidad de alimento del galpón** (`Emp_UndRecAli.UndAliNom`, p. ej. sacos) y se guarda en `DtoConsumo` **convertido a kg**: valor × `UndAliEqKg`, redondeado a 2 decimales. La conversión la hace el servidor; el formulario muestra "Se guardará como X kg". ≥ 0, máximo 2 decimales. Vacío → 0.
+- **Galpón sin unidad de alimento** (o con factor vacío/0): se puede guardar el día con consumo vacío (0); si se escribe un consumo, se bloquea con un mensaje para no guardar un valor sin convertir.
 - **Temperaturas (°C):** enteros, pueden ser negativos (botón ±). Vacío → NULL.
 - Después de guardar se vuelve a la lista de crías con el mensaje de confirmación.
 - **Registrar temperatura:** se elige una fecha entre el inicio de la cría y el último registro; se cargan las temperaturas actuales y solo esas 3 columnas se actualizan. Si la cría no tiene registro en esa fecha, no se permite modificar (lo valida también el servidor).
@@ -142,6 +144,12 @@ Marque cada punto en la URL pública, preferiblemente desde un celular.
 - [ ] El registro aparece en `AVEnG_Cria_Dto` con el `DtoIdCria` correcto.
 - [ ] Duplicado (dos celulares guardan la misma cría y fecha) → "Ya existe un registro para esa fecha…".
 - [ ] Error de inserción (p. ej. variables mal configuradas) → mensaje comprensible, sin detalles técnicos.
+
+**Consumo de alimento**
+- [ ] La etiqueta muestra la unidad del galpón ("Consumo (Sacos…)") en vez de "g".
+- [ ] Al escribir un consumo aparece "Se guardará como X kg" con valor × factor.
+- [ ] En `AVEnG_Cria_Dto.DtoConsumo` queda el valor convertido (p. ej. 3,5 sacos × 46 = 161).
+- [ ] Galpón sin unidad configurada → "Consumo (sin unidad)"; con consumo > 0 no deja guardar; vacío sí.
 
 **Registrar temperatura**
 - [ ] El botón aparece debajo de "Registrar datos" en cada cría.

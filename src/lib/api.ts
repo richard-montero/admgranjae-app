@@ -71,6 +71,7 @@ export function getCria(token: string, idCria: number): Promise<CriaDetalle> {
   return solicitar<CriaDetalle>(`cria?id=${encodeURIComponent(idCria)}`, { token });
 }
 
+/** `datos.DtoConsumo` va en la unidad de alimento del galpón; el servidor lo convierte a kg. */
 export function insertarRegistroCria(token: string, idCria: number, datos: DatosRegistro): Promise<{ ok: true }> {
   return solicitar<{ ok: true }>("registro", { metodo: "POST", token, cuerpo: { idCria, ...datos } });
 }

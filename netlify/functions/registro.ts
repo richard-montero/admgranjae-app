@@ -1,7 +1,13 @@
+import { convertirConsumoAKg, errorConsumoSinUnidad, unidadValida } from "../../src/lib/alimento";
 import { calcularRango } from "../../src/lib/fechas";
 import { validarRegistro } from "../../src/lib/validacion";
 import type { EntradaRegistro } from "../../src/types/registro";
-import { buscarCriaAsignada, insertarRegistroCria, obtenerFechasCria } from "../lib/consultas";
+import {
+  buscarCriaAsignada,
+  insertarRegistroCria,
+  obtenerFechasCria,
+  obtenerUnidadAlimento,
+} from "../lib/consultas";
 import { ErrorHttp, esDuplicado, exigirSesion, leerId, leerJson, manejador, responder } from "../lib/respuestas";
 
 /** Convierte un valor recibido en texto para aplicar las mismas reglas del formulario. */
@@ -16,6 +22,7 @@ function aTexto(valor: unknown): string {
  * POST /api/registro
  * { idCria, DtoFecha, DtoMortalidad, DtoDescarte, DtoPesoProm, DtoConsumo,
  *   DtoTempMna, DtoTempTarde, DtoTempNoche }
+ * DtoConsumo llega en la unidad de alimento del galpón; aquí se convierte a kg.
  */
 export default manejador("POST", async (req) => {
   const sesion = exigirSesion(req);
@@ -52,9 +59,18 @@ export default manejador("POST", async (req) => {
     throw new ErrorHttp(422, soloFecha ? "FECHA_FUERA_RANGO" : "DATOS_INVALIDOS", resultado.errores);
   }
 
-  // 4. Insertar. El índice UNIQUE CriaFecha (DtoIdCria, DtoFecha) impide duplicados
+  // 4. Consumo: llega en la unidad de alimento del galpón y se guarda en kg (valor × UndAliEqKg)
+  const unidad = await obtenerUnidadAlimento(idCria);
+  const errorUnidad = errorConsumoSinUnidad(resultado.datos.DtoConsumo, unidad);
+  if (errorUnidad) throw new ErrorHttp(422, "DATOS_INVALIDOS", { consumo: errorUnidad });
+  const datos = {
+    ...resultado.datos,
+    DtoConsumo: unidadValida(unidad) ? convertirConsumoAKg(resultado.datos.DtoConsumo, unidad) : 0,
+  };
+
+  // 5. Insertar. El índice UNIQUE CriaFecha (DtoIdCria, DtoFecha) impide duplicados
   try {
-    const idDto = await insertarRegistroCria(idCria, resultado.datos);
+    const idDto = await insertarRegistroCria(idCria, datos);
     return responder(201, { ok: true, IdDto: idDto });
   } catch (err) {
     if (esDuplicado(err)) throw new ErrorHttp(409, "DUPLICADO");

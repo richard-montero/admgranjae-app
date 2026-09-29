@@ -12,6 +12,15 @@ export interface RangoFechas {
   alDia: boolean;
 }
 
+/** Unidad en que se registra el consumo de alimento del galpón (Emp_UndRecAli). */
+export interface UnidadAlimento {
+  IdUndAli: number;
+  /** Nombre de la unidad que ve el encargado. */
+  UndAliNom: string;
+  /** Factor de conversión a kg: kg = valor ingresado × UndAliEqKg. */
+  UndAliEqKg: number;
+}
+
 /** Datos de una cría para la pantalla de gestión. */
 export interface CriaDetalle extends RangoFechas {
   IdCria: number;
@@ -20,4 +29,6 @@ export interface CriaDetalle extends RangoFechas {
   GrjNombre: string;
   CrFecInicio: string;
   UltFecha: string | null;
+  /** null si el galpón no tiene unidad de alimento configurada. */
+  unidadAlimento: UnidadAlimento | null;
 }
