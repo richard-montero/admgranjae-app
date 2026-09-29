@@ -107,6 +107,17 @@ src/
 
 ---
 
+## Instalar la app en el celular (ícono en la pantalla de inicio)
+
+La app incluye `public/manifest.webmanifest` e íconos (`icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png`) con el logo de RAMN Software. Al abrirla desde el ícono se muestra a pantalla completa, sin la barra del navegador.
+
+- **Android (Chrome):** abrir la URL → menú **⋮** → **Instalar aplicación** o **Agregar a pantalla principal**.
+- **iPhone (Safari):** abrir la URL → botón **Compartir** → **Agregar a inicio** → **Agregar**.
+
+Para compartirla basta con enviar la URL (por ejemplo por WhatsApp). Solo podrán ingresar los teléfonos registrados en `Emp_Personal`.
+
+---
+
 ## Checklist de pruebas en Netlify
 
 Marque cada punto en la URL pública, preferiblemente desde un celular.
@@ -159,6 +170,11 @@ Marque cada punto en la URL pública, preferiblemente desde un celular.
 - [ ] Fecha sin registro de esa cría → "No hay un registro de esta cría en esa fecha…" y no hay formulario.
 - [ ] Cría sin ningún registro → aviso "Esta cría todavía no tiene registros".
 - [ ] Si falla con error inesperado, revisar que el usuario MySQL tenga permiso UPDATE.
+
+**Instalación**
+- [ ] Android: aparece "Instalar aplicación" y el ícono RAMN queda en la pantalla de inicio.
+- [ ] iPhone: "Agregar a inicio" muestra el ícono RAMN y el nombre AdmGranja.
+- [ ] Al abrir desde el ícono, la app ocupa toda la pantalla y recuerda el teléfono.
 
 **Navegación**
 - [ ] Abrir directamente `https://<su-sitio>/cria/<id>` y `/cria/<id>/temperatura` y refrescar → no aparece pantalla en blanco.

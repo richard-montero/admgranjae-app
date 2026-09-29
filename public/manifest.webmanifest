@@ -1,0 +1,16 @@
+{
+  "name": "Administración Granjas de Engorde",
+  "short_name": "AdmGranja",
+  "description": "Registro diario de crías de pollos de engorde",
+  "lang": "es",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#EEF1EC",
+  "theme_color": "#1E6446",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
