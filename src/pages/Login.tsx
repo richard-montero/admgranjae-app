@@ -44,8 +44,9 @@ export function Login() {
   return (
     <main className="login">
       <div className="login__marca">
+        <img className="login__logo" src="/ramnsoft.png" alt="RAMN Software" width={64} height={64} />
         <p className="etiqueta">Registro diario de crías</p>
-        <h1 className="login__titulo">AdmGranja</h1>
+        <h1 className="login__titulo">Administración Granjas de Engorde</h1>
       </div>
       <form className="login__form" onSubmit={ingresar} noValidate>
         <div className={`campo${error ? " campo--error" : ""}`}>

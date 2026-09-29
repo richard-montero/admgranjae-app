@@ -315,10 +315,29 @@ img {
   gap: 28px;
 }
 
+.login__marca {
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+}
+
+.login__logo {
+  width: 64px;
+  height: 64px;
+  box-sizing: content-box;
+  padding: 6px;
+  margin-bottom: 10px;
+  background: #ffffff; /* el logo tiene texto negro: siempre sobre blanco */
+  border: 1px solid var(--linea);
+  border-radius: 12px;
+  image-rendering: pixelated;
+}
+
 .login__titulo {
-  margin: 4px 0 0;
-  font: 700 44px/1 var(--f-display);
+  margin: 0;
+  font: 700 34px/1.05 var(--f-display);
   color: var(--primario);
+  text-wrap: balance;
 }
 
 .login__form {
