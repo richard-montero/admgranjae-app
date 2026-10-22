@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { CampoContrasena } from "../components/CampoContrasena";
+import { InstalarApp } from "../components/InstalarApp";
 import { MensajeError } from "../components/MensajeError";
 import { useUsuario } from "../hooks/useUsuario";
 import { cambiarContrasenaInicial, getUsuarioByTelefono } from "../lib/api";
@@ -92,36 +93,39 @@ function FormIngreso({ onSesion, onCambioRequerido }: PropsIngreso) {
   };
 
   return (
-    <form className="login__form" onSubmit={ingresar} noValidate>
-      <div className="campo">
-        <label htmlFor="telefono" className="campo__etiqueta">
-          Número de teléfono
-        </label>
-        <input
-          id="telefono"
-          name="telefono"
-          type="tel"
-          inputMode="numeric"
-          autoComplete="tel"
-          placeholder="Ej. 70000000"
-          value={telefono}
-          disabled={cargando}
-          onChange={(e) => setTelefono(e.target.value)}
+    <>
+      <form className="login__form" onSubmit={ingresar} noValidate>
+        <div className="campo">
+          <label htmlFor="telefono" className="campo__etiqueta">
+            Número de teléfono
+          </label>
+          <input
+            id="telefono"
+            name="telefono"
+            type="tel"
+            inputMode="numeric"
+            autoComplete="tel"
+            placeholder="Ej. 70000000"
+            value={telefono}
+            disabled={cargando}
+            onChange={(e) => setTelefono(e.target.value)}
+          />
+        </div>
+        <CampoContrasena
+          id="contrasena"
+          etiqueta="Contraseña"
+          valor={contrasena}
+          onCambio={setContrasena}
+          autoComplete="current-password"
+          deshabilitado={cargando}
         />
-      </div>
-      <CampoContrasena
-        id="contrasena"
-        etiqueta="Contraseña"
-        valor={contrasena}
-        onCambio={setContrasena}
-        autoComplete="current-password"
-        deshabilitado={cargando}
-      />
-      {error && <MensajeError>{error}</MensajeError>}
-      <button type="submit" className="boton boton--primario boton--grande" disabled={cargando}>
-        {cargando ? "Verificando..." : "Ingresar"}
-      </button>
-    </form>
+        {error && <MensajeError>{error}</MensajeError>}
+        <button type="submit" className="boton boton--primario boton--grande" disabled={cargando}>
+          {cargando ? "Verificando..." : "Ingresar"}
+        </button>
+      </form>
+      <InstalarApp />
+    </>
   );
 }
 

@@ -119,8 +119,19 @@ src/
 
 La app incluye `public/manifest.webmanifest` e íconos (`icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png`) con el logo de RAMN Software. Al abrirla desde el ícono se muestra a pantalla completa, sin la barra del navegador.
 
-- **Android (Chrome):** abrir la URL → menú **⋮** → **Instalar aplicación** o **Agregar a pantalla principal**.
-- **iPhone (Safari):** abrir la URL → botón **Compartir** → **Agregar a inicio** → **Agregar**.
+En la pantalla de ingreso aparece el botón **Instalar en este dispositivo** (`src/components/InstalarApp.tsx`, `src/lib/instalacion.ts`):
+
+- **Android, PC y Mac con Chrome o Edge:** el botón abre la ventana de instalación del navegador. Solo aparece cuando el navegador indica que la app se puede instalar (evento `beforeinstallprompt`); si ya está instalada, no aparece.
+- **iPhone / iPad:** Apple no permite instalar con un botón; el botón muestra los pasos: **Compartir** → **Agregar a inicio** → **Agregar**. En Chrome/Firefox de iPhone sugiere abrir la dirección en Safari.
+- **Abierta desde el ícono** (ya instalada): el botón no aparece.
+- `public/sw.js` es un service worker mínimo que algunas versiones de Chrome/Edge exigen para ofrecer la instalación. No guarda nada en caché.
+
+Limitaciones de los navegadores: en iPhone, Safari no informa si la app ya fue agregada, así que el botón sigue apareciendo en Safari (no dentro de la app). En Firefox de PC y en Safari de Mac no aparece. Si el usuario rechaza la ventana de Chrome/Edge, el botón vuelve a aparecer cuando el navegador lo vuelva a permitir.
+
+Instalación manual (si el botón no aparece):
+
+- **Android (Chrome):** menú **⋮** → **Instalar aplicación** o **Agregar a pantalla principal**.
+- **PC / Mac (Chrome o Edge):** ícono de instalar en la barra de direcciones, o menú → **Instalar AdmGranja**.
 
 Para compartirla basta con enviar la URL (por ejemplo por WhatsApp). Solo podrán ingresar los teléfonos registrados en `Emp_Personal`.
 
@@ -185,6 +196,10 @@ Marque cada punto en la URL pública, preferiblemente desde un celular.
 - [ ] Si falla con error inesperado, revisar que el usuario MySQL tenga permiso UPDATE.
 
 **Instalación**
+- [ ] Android/PC/Mac con Chrome o Edge: aparece "Instalar en este dispositivo" y abre la ventana de instalación.
+- [ ] Después de instalar, el botón ya no aparece (ni en el navegador ni dentro de la app).
+- [ ] iPhone: el botón muestra los 3 pasos de Safari.
+- [ ] Firefox de PC: el botón no aparece.
 - [ ] Android: aparece "Instalar aplicación" y el ícono RAMN queda en la pantalla de inicio.
 - [ ] iPhone: "Agregar a inicio" muestra el ícono RAMN y el nombre AdmGranja.
 - [ ] Al abrir desde el ícono, la app ocupa toda la pantalla y recuerda el teléfono.

@@ -361,6 +361,32 @@ img {
   font-variant-numeric: tabular-nums;
 }
 
+/* ---------- Instalar en este dispositivo ---------- */
+.instalar {
+  display: grid;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--linea);
+}
+
+.instalar__pasos {
+  margin: 0;
+  padding-left: 22px;
+  display: grid;
+  gap: 6px;
+  color: var(--tinta);
+  font-size: 15px;
+}
+
+.instalar__icono {
+  vertical-align: -3px;
+  color: var(--info);
+}
+
+.instalar .aviso .boton {
+  justify-self: start;
+}
+
 /* ---------- Campos ---------- */
 .campo {
   display: grid;
